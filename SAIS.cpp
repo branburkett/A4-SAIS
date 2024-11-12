@@ -167,5 +167,87 @@ SuffixArray sais(const vector<size_t>& text) {
     }
     std::cout << std::endl;
 
+	// PASS 2 iterate through SA and do L-to-R Front
+	for (size_t i = 0; i < temporarySA.size(); ++i) {
+		if (temporarySA[i] == -1)
+			continue; // if -1 skip
+
+		int saIndex = temporarySA[i] - 1; // get SA value and sub 1
+
+		if (saIndex < 0 || saIndex >= (int)s.size())
+			continue; // check bounds
+
+		if (s[saIndex] == 'l') { // check if L type in s vec
+			int letter = text[saIndex]; // get letter from text
+
+			// Find bucket
+			int head = buckets[letter].head;
+			int tail = buckets[letter].tail;
+
+			// Try to place saIndex in the front of bucket
+			while (head <= tail) {
+				if (temporarySA[head] == -1) {
+					temporarySA[head] = saIndex;
+					break; // placed saIndex at front of bucket
+				}
+				++head;
+			}
+		}
+	}
+
+	    // Output the SA array after processing
+    std::cout << "SA array after processing 'L' types:\n";
+    for (int index : temporarySA) {
+        std::cout << index << " ";
+    }
+    std::cout << std::endl;
+
+	int times = 0;
+	// PASS 3 R-to-L 'S' type to front of bucket
+	for (size_t i = temporarySA.size() - 1; i >= 0; --i) {
+		if ((int)i <= -1)
+			break;
+		if (temporarySA[i] == -1)
+			continue; // skip -1 values
+
+		std::cout << "tempSA[" << i << "] = " << temporarySA[i] << std::endl;
+		times += 1;
+		if (times == 23)
+			break;
+
+
+		int saIndex = temporarySA[i] - 1; // get value - 1
+
+		//std::cout << " saIndex " << saIndex;
+
+		if (saIndex < 0 || saIndex >= (int)s.size()) // check bounds
+			continue;
+
+		if (s[saIndex] == 'l')
+			continue; // skip l types
+
+		int letter = text[saIndex]; // get letter at text
+
+		// find bucket
+		int head = buckets[letter].head;
+		int tail = buckets[letter].tail;
+
+		while (tail >= head) {
+			temporarySA[tail] = saIndex;
+			--tail;
+		}
+
+		if (tail >= head) {
+			buckets[letter].tail = tail;
+		}
+	}
+
+	    // Output the SA array after processing 'S' or '*' types
+    std::cout << "SA array after processing 'S' or '*' types:\n";
+    for (int index : temporarySA) {
+        std::cout << index << " ";
+    }
+    std::cout << std::endl;
+
   return {};
 }
